@@ -7,7 +7,7 @@ class Saludar
     {
         wp_send_json([
             "status" => "ok",
-            "1 mensaje" => "wazaaaa"
+            "1 mensaje" => "waza"
         ]);
 
     }

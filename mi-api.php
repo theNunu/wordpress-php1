@@ -1,29 +1,8 @@
 <?php
-// /*
-// Plugin Name: Mi API Estructurada
-// Version: 1.0
-// */
-
-// require_once plugin_dir_path(__FILE__) . 'controllers/UsuarioController.php';
-// // require_once plugin_dir_path(__FILE__) . 'wp-content/plugins/mi-api/controllers/UsuarioController.php';
-
-// add_action('rest_api_init', function () {
-
-//     register_rest_route('miapi/v1', '/crear', [
-//         'methods'  => 'POST',
-//         'callback' => ['UsuarioController', 'crear'],
-//         'permission_callback' => '__return_true'
-//     ]);
-
-// });
-
-/*
-Plugin Name: DPTI API
-Version: 1.0
-*/
 
 require_once plugin_dir_path(__FILE__) . 'services/SignService.php';
 require_once plugin_dir_path(__FILE__) . 'services/Saludar.php';
+require_once plugin_dir_path(__FILE__) . 'services/PersonalizedGreetingService.php';
 
 add_action('wp_ajax_nopriv_dpti_create_sign', 'dpti_create_sign');
 add_action('wp_ajax_dpti_create_sign', 'dpti_create_sign');
@@ -61,13 +40,22 @@ add_action('wp_ajax_dpti_mandar_saludo', 'dpti_mandar_saludo');
 
 function dpti_mandar_saludo()
 {
-    // Delegar lógica al service
     $response = Saludar::mandarSaludo();
 
     wp_send_json($response);
-    //  wp_send_json([
-    //     "status" =>  "ok",
-    //     "1 mensaje"=> "wazaaaa"
-    //  ]);
 
 }
+
+//personalized greeting
+add_action('wp_ajax_nopriv_greet_someone', 'greet_someone');
+add_action('wp_ajax_greet_someone', 'greet_someone');
+
+function greet_someone()
+{
+
+    $response = PersonalizedGreetingService::greet();
+
+    wp_send_json($response);
+
+}
+//http://localhost/miwp/wp-admin/admin-ajax.php  -> LA RUTA POR DEFECTO A USAR EN POSTMAN
