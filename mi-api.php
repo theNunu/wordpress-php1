@@ -23,11 +23,13 @@ Version: 1.0
 */
 
 require_once plugin_dir_path(__FILE__) . 'services/SignService.php';
+require_once plugin_dir_path(__FILE__) . 'services/Saludar.php';
 
 add_action('wp_ajax_nopriv_dpti_create_sign', 'dpti_create_sign');
 add_action('wp_ajax_dpti_create_sign', 'dpti_create_sign');
 
-function dpti_create_sign() {
+function dpti_create_sign()
+{
 
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         wp_send_json([
@@ -57,10 +59,15 @@ function dpti_create_sign() {
 add_action('wp_ajax_nopriv_dpti_mandar_saludo', 'dpti_mandar_saludo');
 add_action('wp_ajax_dpti_mandar_saludo', 'dpti_mandar_saludo');
 
-function dpti_mandar_saludo(){
-     wp_send_json([
-        "status" =>  "ok",
-        "1 mensaje"=> "wazaaaa"
-     ]);
+function dpti_mandar_saludo()
+{
+    // Delegar lógica al service
+    $response = Saludar::mandarSaludo();
+
+    wp_send_json($response);
+    //  wp_send_json([
+    //     "status" =>  "ok",
+    //     "1 mensaje"=> "wazaaaa"
+    //  ]);
 
 }
