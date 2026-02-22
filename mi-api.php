@@ -60,16 +60,30 @@ function greet_someone()
         ], 405);
     }
 
+        // Validar obligatorios
+    $required = ['firstName','lastName', 'age'];
+
+    foreach ($required as $r) {
+        if (!isset($_POST[$r]) || empty($_POST[$r])) {
+            wp_send_json([
+                "status" => "error",
+                "msg" => "El campo {$r} es obligatorio"
+            ], 400);
+        }
+    }
+
     $firstName = sanitize_text_field($_POST['firstName']);
-    $secondName = sanitize_text_field($_POST['secondName']);
+    $secondName = sanitize_text_field($_POST['lastName']);
     $age = sanitize_text_field($_POST['age']);
+    $phoneNumber = sanitize_text_field($_POST['phoneNumber'] ?? ''); //campo opcional
         
     // echo '<pre>'; var_dump( 'no vale'); echo '</pre>'; die();
 
     $data = [
         'firstName' => $firstName,
         // 'givenName' => $givenName,
-        'secondName' => $secondName,
+        'lastName' => $secondName,
+        'phoneNumber' => $phoneNumber, //campo opcional
         'age' => $age
     ];
 
