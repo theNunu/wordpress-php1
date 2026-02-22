@@ -52,7 +52,6 @@ add_action('wp_ajax_greet_someone', 'greet_someone');
 
 function greet_someone()
 {
-
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         wp_send_json([
             "status" => "error",
@@ -60,8 +59,8 @@ function greet_someone()
         ], 405);
     }
 
-        // Validar obligatorios
-    $required = ['firstName','lastName', 'age'];
+    // Validar obligatorios
+    $required = ['firstName', 'lastName', 'age'];
 
     foreach ($required as $r) {
         if (!isset($_POST[$r]) || empty($_POST[$r])) {
@@ -76,8 +75,8 @@ function greet_someone()
     $secondName = sanitize_text_field($_POST['lastName']);
     $age = sanitize_text_field($_POST['age']);
     $phoneNumber = sanitize_text_field($_POST['phoneNumber'] ?? ''); //campo opcional
-        
-    // echo '<pre>'; var_dump( 'no vale'); echo '</pre>'; die();
+
+    //  echo '<pre>'; var_dump( 'no vale'); echo '</pre>'; die();
 
     $data = [
         'firstName' => $firstName,
@@ -91,6 +90,49 @@ function greet_someone()
 
 
     $response = PersonalizedGreetingService::greet($data);
+
+    wp_send_json($response);
+
+}
+
+//personalized greeting
+add_action('wp_ajax_nopriv_greet_someone2', 'greet_someone2');
+add_action('wp_ajax_greet_someone2', 'greet_someone2');
+
+function greet_someone2()
+{
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        wp_send_json([
+            "status" => "error",
+            "msg" => "Metodo no permitido"
+        ], 405);
+    }
+
+    // Validar obligatorios
+    $required = ['firstName', 'lastName', 'age'];
+
+    foreach ($required as $r) {
+        if (!isset($_POST[$r]) || empty($_POST[$r])) {
+            wp_send_json([
+                "status" => "error",
+                "msg" => "El campo {$r} es obligatorio"
+            ], 400);
+        }
+    }
+
+    // Sanitizar
+    $data = [
+        'firstName' => sanitize_text_field($_POST['firstName']),
+        'lastName' => sanitize_text_field($_POST['lastName']),
+        'age' => intval($_POST['age']),
+        'phoneNumber' => sanitize_text_field($_POST['phoneNumber'] ?? '')
+    ];
+
+    // Si viene archivo lo tomamos, si no null
+    $file = $_FILES['pdfFile'] ?? null;
+
+    $response = PersonalizedGreetingService::greet2($data, $file);
 
     wp_send_json($response);
 
