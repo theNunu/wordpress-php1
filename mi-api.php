@@ -53,7 +53,30 @@ add_action('wp_ajax_greet_someone', 'greet_someone');
 function greet_someone()
 {
 
-    $response = PersonalizedGreetingService::greet();
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        wp_send_json([
+            "status" => "error",
+            "msg" => "Metodo no permitido"
+        ], 405);
+    }
+
+    $firstName = sanitize_text_field($_POST['firstName']);
+    $secondName = sanitize_text_field($_POST['secondName']);
+    $age = sanitize_text_field($_POST['age']);
+        
+    // echo '<pre>'; var_dump( 'no vale'); echo '</pre>'; die();
+
+    $data = [
+        'firstName' => $firstName,
+        // 'givenName' => $givenName,
+        'secondName' => $secondName,
+        'age' => $age
+    ];
+
+    // echo '<pre>'; var_dump( $data); echo '</pre>'; die();
+
+
+    $response = PersonalizedGreetingService::greet($data);
 
     wp_send_json($response);
 

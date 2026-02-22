@@ -1,0 +1,3 @@
+la ruta de la carpeta que cree 
+
+C:\xampp\htdocs
