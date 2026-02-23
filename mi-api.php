@@ -145,7 +145,8 @@ add_action('wp_ajax_dpti_make_sign', 'dpti_make_sign');
 
 function dpti_make_sign()
 {
-    echo '<pre>'; var_dump( 'wazaaaaaaaaaaaa'); echo '</pre>'; die();
+    // echo '<pre>'; var_dump( 'wazaaaaaaaaaaaa'); echo '</pre>'; die();
+
 
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         wp_send_json([
@@ -155,7 +156,27 @@ function dpti_make_sign()
     }
 
     // Validar obligatorios
-    $required = ['firstName', 'lastName', 'age'];
+    $required = [
+        'nui',
+        'givenName',
+        'secondName',
+        'surname1',
+        'surname2',
+        'province',
+        'city',
+        'country',
+        'address',
+        'email',
+        'phoneNumber',
+        'reason',
+        // 'file',
+        'reason',
+        'typeSign',
+
+        // 'clientCode',
+        // 'contractAmount',
+        // 'personalized_template_email_reception'
+    ];
 
     foreach ($required as $r) {
         if (!isset($_POST[$r]) || empty($_POST[$r])) {
@@ -165,19 +186,42 @@ function dpti_make_sign()
             ], 400);
         }
     }
+    // 🔴 Validar archivo obligatorio correctamente
+    if (!isset($_FILES['file']) || $_FILES['file']['error'] !== 0) {
+        wp_send_json([
+            "status" => "error",
+            "msg" => "El archivo es obligatorioo"
+        ], 400);
+    }
 
     // Sanitizar
     $data = [
-        'firstName' => sanitize_text_field($_POST['firstName']),
-        'lastName' => sanitize_text_field($_POST['lastName']),
-        'age' => intval($_POST['age']),
-        'phoneNumber' => sanitize_text_field($_POST['phoneNumber'] ?? '')
+        'nui' => sanitize_text_field($_POST['nui']),
+        'givenName' => sanitize_text_field($_POST['givenName']),
+        'secondName' => sanitize_text_field($_POST['secondName']),
+        'surname1' => sanitize_text_field($_POST['surname1']),
+        'surname2' => sanitize_text_field($_POST['surname2']),
+        'province' => sanitize_text_field($_POST['province']),
+        'city' => sanitize_text_field($_POST['city']),
+        'country' => sanitize_text_field($_POST['country']),
+        'address' => sanitize_text_field($_POST['address']),
+        'email' => sanitize_email($_POST['email']),
+        'phoneNumber' => sanitize_text_field($_POST['phoneNumber']),
+        'reason' => sanitize_text_field($_POST['reason']),
+        // 'file' => sanitize_text_field($_POST['file']),
+        'typeSign' => sanitize_text_field($_POST['typeSign']),
+
+        // 'clientCode' => sanitize_text_field($_POST['clientCode'] ?? ''),
+        // 'contractAmount' => sanitize_text_field($_POST['contractAmount'] ?? ''),
+        // 'personalized_template_email_reception' => sanitize_text_field($_POST['personalized_template_email_reception'] ?? ''),
     ];
+
+    $file = $_FILES['file'];
 
     // // Si viene archivo lo tomamos, si no null
     // $file = $_FILES['pdfFile'] ?? null;
 
-    $response = Sign::createSign($data);
+    $response = Sign::createSign($data, $file);
 
     wp_send_json($response);
 

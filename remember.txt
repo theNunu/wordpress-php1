@@ -1,3 +1,24 @@
 la ruta de la carpeta que cree 
 
 C:\xampp\htdocs
+
+
+nui 0943986372
+givenName Joseline
+secondName Koraina
+surname1 Vergara
+surname2 Correa
+province Guayas
+city Guayaquil
+country EC
+address Direccion
+email programador2@eclipsoft.com
+phoneNumber 0984422986
+reason Maresa Contrata tu auto
+file  (un archivo)
+reason contratar un servicio de internet
+typeSign acreditada
+
+clientCode 65555656566558
+contractAmount 5000
+personalized_template_em_contract_negate

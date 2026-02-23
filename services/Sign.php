@@ -1,45 +1,51 @@
 <?php
 
-class Sign {
+class Sign
+{
     //NO LE HAGAS CASO A ESTO
 
-    public static function createSign($postData) {
+    public static function createSign($postData, $file)
+    {
 
-        // Sanitizar
-        $nui        = sanitize_text_field($postData['nui']);
-        $givenName  = sanitize_text_field($postData['givenName']);
-        $secondName = sanitize_text_field($postData['secondName'] ?? '');
-        $surname1   = sanitize_text_field($postData['surname1']);
-        $surname2   = sanitize_text_field($postData['surname2'] ?? '');
-        $province   = sanitize_text_field($postData['province'] ?? '');
-        $city       = sanitize_text_field($postData['city'] ?? '');
-        $country    = sanitize_text_field($postData['country'] ?? '');
-        $address    = sanitize_text_field($postData['address'] ?? '');
-        $email      = sanitize_email($postData['email']);
-        $phone      = sanitize_text_field($postData['phoneNumber'] ?? '');
-        $reason     = sanitize_text_field($postData['reason'] ?? '');
+        // =========================
+        // 1️⃣ VALIDAR MIME REAL
+        // =========================
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $file['tmp_name']);
+        finfo_close($finfo);
 
-        // Validación extra
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if ($mimeType !== 'application/pdf') {
             return [
                 "status" => "error",
-                "msg" => "Email inválido"
+                "msg" => "El archivo debe ser un PDF válido"
             ];
         }
 
-        // Aquí iría lógica real:
-        // - Guardar en DB con $wpdb
-        // - Consumir API externa
-        // - Generar token
-        // etc.
+        // =========================
+        // 2️⃣ VALIDAR NOMBRE
+        // =========================
+        $fileName = strtoupper($file['name']); // Para evitar problemas de mayúsculas
+
+        if (
+            strpos($fileName, 'CONTRATO') === false &&
+            strpos($fileName, 'NEGADA') === false
+        ) {
+            return [
+                "status" => "error",
+                "msg" => "El nombre del archivo debe contener la palabra CONTRATO o NEGADA"
+            ];
+        }
+
+
 
         return [
             "status" => "ok",
-            "msg" => "Registro procesado correctamente",
-            "data" => [
-                "nui" => $nui,
-                "email" => $email
-            ]
+            "la info" => $postData
+            // "msg" => "Registro procesado correctamente",
+            // "data" => [
+            //     "nui" => $nui,
+            //     "email" => $email
+            // ]
         ];
     }
 }
